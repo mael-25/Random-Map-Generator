@@ -11,7 +11,7 @@ seed = -1
 seed_of_the_day = True
 
 
-level = logging.WARN
+level = logging.WARNING
 logging.basicConfig(format='%(levelname)s - %(name)s - %(message)s', level=level)
 map = mapGeneration.generate_map(seed, seed_of_the_day)
 logger = logging.getLogger("MAIN")
@@ -39,8 +39,13 @@ running = True
 while running:
     screen.fill((0,0,0))
     for event in pygame.event.get():
+        
         if event.type == QUIT:
             running = False
+        if event.type == KEYDOWN:
+            if event.key == K_q:
+                logger.log(logging.DEBUG, "QUIT")
+                running = False
     draw_grid(screen, map)
     pygame.display.update()
     
