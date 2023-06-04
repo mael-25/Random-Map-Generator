@@ -8,7 +8,7 @@ from pygame.locals import *
 
 seed = -1
 
-seed_of_the_day = True
+seed_of_the_day = False
 
 
 level = logging.WARNING
