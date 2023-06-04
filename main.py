@@ -8,10 +8,12 @@ from pygame.locals import *
 
 seed = -1
 
+seed_of_the_day = True
+
 
 level = logging.WARN
 logging.basicConfig(format='%(levelname)s - %(name)s - %(message)s', level=level)
-map = mapGeneration.generate_map(seed)
+map = mapGeneration.generate_map(seed, seed_of_the_day)
 logger = logging.getLogger("MAIN")
 
 print(map)
