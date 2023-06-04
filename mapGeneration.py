@@ -9,11 +9,11 @@ IMPORTANTINFO = 35
 logging.addLevelName(IMPORTANTINFO, "INFO")
 
 
-def generate_map(seed=-1):
+def generate_map(seed=-1, seed_of_the_day=False):
 
     logger = logging.getLogger("Maze Generation Logger")
 
-    seed = getSeed(seed)
+    seed = getSeed(seed, seed_of_the_day)
     random.seed(seed)
 
     logger.info("Seed: ({})".format(seed))
