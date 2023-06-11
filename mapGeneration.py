@@ -149,7 +149,7 @@ def generate_map(seed=-1, seed_of_the_day=False):
     grid = final_grid2
     grid.dtype = np.uint
     
-
+    
     finished = False
     initial_node = Node((0,0), unchecked_directions=get_directions((0,0), grid))
     node_list = [initial_node]
