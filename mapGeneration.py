@@ -144,6 +144,7 @@ def generate_map(seed=-1, seed_of_the_day=False):
             final_grid2[i, i2] = int(bool(y))
 
 
+    
     ## node generation ((extremely) messy)
 
     grid = final_grid2
@@ -152,46 +153,49 @@ def generate_map(seed=-1, seed_of_the_day=False):
 
     finished = False
     initial_node = Node((0,0), unchecked_directions=get_directions((0,0), grid))
-    node_list= [initial_node]
+    node_list = [initial_node]
     unchecked_nodes = [initial_node]
     grid[0,0] = NODE
     while not finished:
-        if len(unchecked_nodes) == 0:
+        if len(unchecked_nodes) == 0: ## no more newly-created, unckecked nodes, stop
             finished = True
             break
-        current_node = unchecked_nodes[0]
-        if len(current_node.unchecked_directions) == 0:
+        current_node = unchecked_nodes[0] # take first node of unchecked nodes
+        if len(current_node.unchecked_directions) == 0: ## if no more unchecked directions, then consider node as "checked" and start checking new node
             del unchecked_nodes[0]
             continue
-        current_directions = current_node.unchecked_directions.pop(0)
+        current_directions = current_node.unchecked_directions.pop(0) # pop the first unchecked direction of the current node to check
         finished2 = False
-        current_position = current_node.pos
+        current_position = current_node.pos ## the current position (position you are checking)
         while not finished2:
-            current_position = (current_position[0]+current_directions[0], current_position[1]+current_directions[1])
-            # number_of_directions = len(get_directions(current_position))
-            number_of_directions = len(get_directions(current_position, grid))
-            has_node_at_pos = False
-            for x in node_list:
+            current_position = (current_position[0]+current_directions[0], current_position[1]+current_directions[1]) ## defines the new position to check (based on direction and previous direction)
+            number_of_directions = len(get_directions(current_position, grid)) ## number of directions at the new position
+            node_at_pos = False
+            for x in node_list: ## checks if there is already a created node at the current position
                 if x.pos == current_position:
-                    has_node_at_pos = True
-                    node_at_current_pos = x
+                    node_at_pos = True
                     break
-            if current_position[0] >= len(grid) or current_position[1]>=len(grid[0]): finished2 = True
-            else: grid[current_position]  =PATH
-            if number_of_directions >2 or perpendicular_directions(get_directions(current_position, grid, [NOTHING, PATH, NODE])):
-                if not has_node_at_pos:
-                    node_at_current_pos = Node(current_position, [current_node], get_directions(current_position, grid))
-                    node_list.append(node_at_current_pos)
-                    unchecked_nodes.append(node_at_current_pos)
-                else:
-                    pass
-                
-                current_node.connections.append(node_at_current_pos)
-                grid[current_position] = NODE
-                
-                finished2 = True
+            if current_position[0] >= len(grid) or current_position[1]>=len(grid[0]): finished2 = True  ## normally not required, checks if the current position gets outside of the grid, in that case, stop
+            else: grid[current_position] = PATH
+            if number_of_directions >2 or perpendicular_directions(get_directions(current_position, grid, [NOTHING, PATH, NODE])): ## checks if there is either more than three directions or two perpendicular direction, if true, create a new node (underneath)
+                if not node_at_pos: ## if there is not an already-created node, create a new node
+                    new_node = Node(current_position, [current_node], get_directions(current_position, grid)) ## creates a new node at position "current_position", connected to "current_node"
+                    node_list.append(new_node) ## adds the new node to the nodes list
+                    unchecked_nodes.append(new_node) ## adds the new node to the unchecked nodes list
+                    
 
-        
+                ## TODO: do not do two times the "for x in node_list"
+
+                else: ## if there is a node already created, find that node
+                    for x in node_list:
+                        if x.pos == current_position: 
+                            x.connections.append(current_node)
+                            break
+
+                current_node.connections.append(new_node) ## adds new_node as a connection to the old node (current_node) 
+                grid[current_position] = NODE ## mark the current spot on the grid as a node
+                
+                finished2 = True ## finish the while loop
 
 
 
