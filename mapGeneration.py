@@ -31,8 +31,16 @@ def generate_map(seed=-1, seed_of_the_day=False):
         origins = int(RATIO*TOTALSQUARES)
         logger.info("Set number of origins ({})".format(origins))
 
-
-    grid = np.zeros((DIMENTIONS[0]-2, DIMENTIONS[1]-2), dtype=np.int16)
+    if origins-2 >= 2**8:
+        dtype = np.uint8
+    elif origins-2 >= 2**16:
+        dtype = np.int16
+    elif origins-2 >= 2**64:
+        dtype = np.uint64
+    else:
+        # dtype = np.uint256
+        dtype = np.uint
+    grid = np.zeros((DIMENTIONS[0]-2, DIMENTIONS[1]-2), dtype=dtype)
 
     total_origins_added = 0
 
