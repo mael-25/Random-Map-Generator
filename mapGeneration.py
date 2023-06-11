@@ -5,6 +5,8 @@ from constants import *
 import logging
 from generateRandomSeed import getSeed
 
+from node import *
+
 IMPORTANTINFO = 35
 logging.addLevelName(IMPORTANTINFO, "INFO")
 
@@ -122,23 +124,108 @@ def generate_map(seed=-1, seed_of_the_day=False):
         turn += 1
 
     # print(grid)
-    final_grid = np.zeros(DIMENTIONS, np.int16)
+    final_grid = np.zeros(DIMENTIONS, np.uint16)
     final_grid[1:DIMENTIONS[0]-1,1:DIMENTIONS[1]-1] = grid
     # print(final_grid)
 
     logger.info(f"{turn-2} turn(s)")
 
-    final_grid2 = np.zeros(DIMENTIONS, dtype=np.int0)
-    # final_grid2[1,5] = 1
-    # print(final_grid2)
+    final_grid2 = np.zeros(DIMENTIONS, dtype=np.uint0)
 
     for i, x in enumerate(final_grid):
         for i2, y in enumerate(final_grid[i]):
             final_grid2[i, i2] = int(bool(y))
 
-    return final_grid2
+
+    ## node generation
+
+    grid = final_grid2
+    grid.dtype = np.uint
+    
+
+    finished = False
+    initial_node = Node((0,0), unchecked_directions=get_directions((0,0), grid))
+    node_list= [initial_node]
+    unchecked_nodes = [initial_node]
+    grid[0,0] = NODE
+    while not finished:
+        if len(unchecked_nodes) == 0:
+            finished = True
+            break
+        current_node = unchecked_nodes[0]
+        if len(current_node.unchecked_directions) == 0:
+            del unchecked_nodes[0]
+            continue
+        current_directions = current_node.unchecked_directions.pop(0)
+        finished2 = False
+        current_position = current_node.pos
+        while not finished2:
+            current_position = (current_position[0]+current_directions[0], current_position[1]+current_directions[1])
+            # number_of_directions = len(get_directions(current_position))
+            number_of_directions = len(get_directions(current_position, grid))
+            node_at_pos = False
+            for x in node_list:
+                if x.pos == current_position:
+                    node_at_pos = True
+                    break
+            if current_position[0] >= len(grid) or current_position[1]>=len(grid[0]): finished2 = True
+            else: grid[current_position]  =PATH
+            if number_of_directions >2 or perpendicular_directions(get_directions(current_position, grid, [NOTHING, PATH, NODE])):
+                if not node_at_pos:
+                    new_node = Node(current_position, [current_node], get_directions(current_position, grid))
+                    node_list.append(new_node)
+                    unchecked_nodes.append(new_node)
+                    
+                else:
+                    for x in node_list:
+                        if x.pos == current_position: x.connections.append(current_node);break
+                current_node.connections.append(new_node)
+                grid[current_position] = NODE
+                
+                finished2 = True
+
+        
+
+
+
+    return grid, node_list
+
+def get_directions(pos, grid, ids_to_use=[NOTHING]):
+    to_check = [[pos[0]-1, pos[1]],[pos[0]+1, pos[1]],
+                [pos[0], pos[1]-1],[pos[0], pos[1]+1]]
+    to_return = []
+    for i,(x,y) in enumerate(to_check):
+        if x<0 or y<0 or x>=len(grid) or y>=len(grid[0]):
+            pass
+        
+        elif grid[x, y] not in ids_to_use:
+            pass
+        else:
+            
+            if i == 0:
+                r = UP
+            elif i == 1:
+                r = DOWN
+            elif i == 2:
+                r = LEFT
+            elif i == 3:
+                r = RIGHT
+            
+            to_return.append(r)
+    return to_return
+
+def perpendicular_directions(x):
+    if UP in x and DOWN in x and len(x) == 2:
+        return False
+    elif LEFT in x and RIGHT in x and len(x) == 2:
+        return False
+    return True
 
 if __name__ == "__main__":
     level = logging.INFO
     logging.basicConfig(format='%(levelname)s - %(name)s - %(message)s', level=level)
-    print(generate_map())
+    level, nodes = generate_map()
+    print(level)
+    nodes = sorted(nodes)
+    for x in nodes:
+        print(x)
