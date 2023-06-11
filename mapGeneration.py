@@ -134,7 +134,6 @@ def generate_map(seed=-1, seed_of_the_day=False):
     # print(grid)
     final_grid = np.zeros(DIMENTIONS, np.uint16)
     final_grid[1:DIMENTIONS[0]-1,1:DIMENTIONS[1]-1] = grid
-    # print(final_grid)
 
     logger.info(f"{turn-2} turn(s)")
 
@@ -229,11 +228,29 @@ def perpendicular_directions(x):
         return False
     return True
 
+def print_grid(grid):
+    for i, x in enumerate(grid):
+        for i2, y in enumerate(x):
+            t = ""
+            if  y == NOTHING:
+                t = " "
+            elif y == PATH:
+                t = "+"
+            elif y == NODE:
+                t = "•"
+            else:
+                t = "■"
+            print(t, end="")
+        print("")
+    
+
 if __name__ == "__main__":
     level = logging.INFO
     logging.basicConfig(format='%(levelname)s - %(name)s - %(message)s', level=level)
     level, nodes = generate_map()
     print(level)
     nodes = sorted(nodes)
-    for x in nodes:
-        print(x)
+    # for x in nodes:
+    #     print(x)
+
+    print_grid(level)
