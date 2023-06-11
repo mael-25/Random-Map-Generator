@@ -5,6 +5,7 @@ from constants import *
 import pygame
 import numpy as np
 from pygame.locals import *
+from node import *
 
 seed = -1
 
@@ -13,7 +14,7 @@ seed_of_the_day = False
 
 level = logging.WARNING
 logging.basicConfig(format='%(levelname)s - %(name)s - %(message)s', level=level)
-map = mapGeneration.generate_map(seed, seed_of_the_day)
+map, nodes = mapGeneration.generate_map(seed, seed_of_the_day)
 logger = logging.getLogger("MAIN")
 
 print(map)
@@ -30,10 +31,16 @@ def draw_grid(screen, grid):
     pygame.draw.rect(screen, (255,255,255), [MARGIN, MARGIN, DIMENTIONS[1]*SQUAREWIDTH,DIMENTIONS[0]*SQUAREHEIGHT])
     for i, x in enumerate(grid):
         for i2, y in enumerate(x):
-            if y == 1: 
+            if y == WALL: 
                 pygame.draw.rect(screen, (0,0,0), [[MARGIN+(i2*SQUAREWIDTH),MARGIN+(i*SQUAREHEIGHT)],
                                                    [SQUAREWIDTH,SQUAREHEIGHT]])
+            if y == NODE:
+                pygame.draw.circle(screen, (255,0,0), [MARGIN+(i2*SQUAREWIDTH)+SQUAREWIDTH/2,MARGIN+(i*SQUAREHEIGHT)+SQUAREHEIGHT/2], SQUAREWIDTH/3)
 
+def draw_nodes(screen, nodes:list[Node]):
+    for i, n in enumerate(nodes):
+        x, y = n.pos
+        pygame.draw.circle(screen, (255,0,0), [MARGIN+(y*SQUAREWIDTH)+SQUAREWIDTH/2,MARGIN+(x*SQUAREHEIGHT)+SQUAREHEIGHT/2], SQUAREWIDTH/3)
 
 running = True
 while running:
@@ -47,6 +54,7 @@ while running:
                 logger.log(logging.DEBUG, "QUIT")
                 running = False
     draw_grid(screen, map)
+    draw_nodes(screen, nodes)
     pygame.display.update()
     
     
