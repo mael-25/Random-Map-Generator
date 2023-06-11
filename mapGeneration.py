@@ -170,23 +170,23 @@ def generate_map(seed=-1, seed_of_the_day=False):
             current_position = (current_position[0]+current_directions[0], current_position[1]+current_directions[1])
             # number_of_directions = len(get_directions(current_position))
             number_of_directions = len(get_directions(current_position, grid))
-            node_at_pos = False
+            has_node_at_pos = False
             for x in node_list:
                 if x.pos == current_position:
-                    node_at_pos = True
+                    has_node_at_pos = True
+                    node_at_current_pos = x
                     break
             if current_position[0] >= len(grid) or current_position[1]>=len(grid[0]): finished2 = True
             else: grid[current_position]  =PATH
             if number_of_directions >2 or perpendicular_directions(get_directions(current_position, grid, [NOTHING, PATH, NODE])):
-                if not node_at_pos:
-                    new_node = Node(current_position, [current_node], get_directions(current_position, grid))
-                    node_list.append(new_node)
-                    unchecked_nodes.append(new_node)
-                    
+                if not has_node_at_pos:
+                    node_at_current_pos = Node(current_position, [current_node], get_directions(current_position, grid))
+                    node_list.append(node_at_current_pos)
+                    unchecked_nodes.append(node_at_current_pos)
                 else:
-                    for x in node_list:
-                        if x.pos == current_position: x.connections.append(current_node);break
-                current_node.connections.append(new_node)
+                    pass
+                
+                current_node.connections.append(node_at_current_pos)
                 grid[current_position] = NODE
                 
                 finished2 = True
