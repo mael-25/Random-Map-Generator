@@ -190,6 +190,7 @@ def generate_map(seed=-1, seed_of_the_day=False):
                     for x in node_list:
                         if x.pos == current_position: 
                             x.connections.append(current_node)
+                            new_node = x
                             break
 
                 current_node.connections.append(new_node) ## adds new_node as a connection to the old node (current_node) 
