@@ -41,6 +41,8 @@ def draw_nodes(screen, nodes:list[Node]):
     for i, n in enumerate(nodes):
         x, y = n.pos
         pygame.draw.circle(screen, (255,0,0), [MARGIN+(y*SQUAREWIDTH)+SQUAREWIDTH/2,MARGIN+(x*SQUAREHEIGHT)+SQUAREHEIGHT/2], SQUAREWIDTH/3)
+        for c in n.connections:
+            pygame.draw.line(screen, (0,0,0), [MARGIN+(y*SQUAREWIDTH)+SQUAREWIDTH/2,MARGIN+(x*SQUAREHEIGHT)+SQUAREHEIGHT/2], [MARGIN+(c.pos[1]*SQUAREWIDTH)+SQUAREWIDTH/2,MARGIN+(c.pos[0]*SQUAREHEIGHT)+SQUAREHEIGHT/2], 2)
 
 running = True
 while running:
